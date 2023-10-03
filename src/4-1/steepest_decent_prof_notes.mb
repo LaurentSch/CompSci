@@ -1,0 +1,20 @@
+%INITIALISATION
+1 Set a, g % set parameters of the objective function
+2 Set α, u % set stepsize and initial guess
+%STEEPEST DESCENT ALGORITHM
+3 Compute mnew = m(u)
+    -> compute a point in the plane
+4 mold = 10**100 % dummy value
+5 while mnew < mold
+6 mold = mnew
+7 Compute f = ∂m/∂u∣u
+    -> calculate gradient (direction that is the most positive)
+    -> is vector with arrow length that goes from given u point to other point
+        such that if we take a step into that direction it is the steepest one
+8 h = −f
+    -> inverse the gradient
+9 u = u + α h
+10 Compute mnew = m(u)
+11 end
+%COMPLETION
+12 m∗ = mold, u∗ = u − α h
