@@ -20,7 +20,6 @@ def model_4a(u, g):
         u2 = u[2*j+2]
         m += (sqrt((1 + u1)**2 + (1 + u2)**2) - sqrt(2))**2
 
-
     for i in range(9):
         # part 3 loop
         # fix so that it goes from 1 to 10 instead of 0 to 9
