@@ -1,6 +1,7 @@
 import numpy as np
 from math import sqrt
 import math
+from src.models import model_4a
 
 def fixed_steepest_decent(a, g, alpha, u_initial, model, derivatives):
     u = u_initial
@@ -72,3 +73,11 @@ f2 = -40*u[1]*(u[0]-u[1]**2)
 f = np.array([f1, f2])
 print(fixed_steepest_decent(a, g, alpha, u, model_one, model_one_derivatives))
 # print(fixed_steepest_decent(a, g, alpha, u, rosenbrock_function, rosenbrock_derivatives))
+
+u80 = np.zeros(80)
+g80 = np.zeros(80)
+# -1 because my matrix goes from 0 to 79, and not from 1 to 80
+g80[62 - 1] = 1
+g80[79 - 1] = 1
+print(fixed_steepest_decent(a, g80, alpha, u80, model_4a.model_4a, model_4a.model_4a_derivative))
+

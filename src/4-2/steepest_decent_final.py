@@ -1,6 +1,7 @@
 import numpy as np
 from math import sqrt
 import math
+from src.models import model_4a
 
 
 def steepest_decent(a, g, alpha_init, u_initial, model, derivatives, c, r):
@@ -32,6 +33,8 @@ def steepest_decent(a, g, alpha_init, u_initial, model, derivatives, c, r):
             m_x = model(u_x, g)
         m_new = m_x
         u = u_x
+        count += 1
+        print(count)
     # COMPLETION
     m_star = m_old
     u_star = u - alpha * h
@@ -86,4 +89,7 @@ f1 = 20*(u[0]-u[1]**2)+2*(u[0]-1)
 f2 = -40*u[1]*(u[0]-u[1]**2)
 f = np.array([f1, f2])
 print(steepest_decent(a, g, alpha, u, model_one, model_one_derivatives, c, r))
-print(steepest_decent(a, g, alpha, u, rosenbrock_function, rosenbrock_derivatives, c, r))
+# print(steepest_decent(a, g, alpha, u, rosenbrock_function, rosenbrock_derivatives, c, r))
+u80 = np.ones(80)
+g80 = np.zeros(80)
+# print(steepest_decent(a, g80, alpha, u80, model_4a.model_4a, model_4a.model_4a_derivative, c, r))

@@ -1,6 +1,7 @@
 import numpy as np
 from math import sqrt
 import math
+from src.models import model_4a
 
 
 def conjugate_gradient(a, g, alpha_init, u_initial, model, derivatives, c, r, n_reset):
@@ -28,8 +29,16 @@ def conjugate_gradient(a, g, alpha_init, u_initial, model, derivatives, c, r, n_
         else:
             # beta = f_new.T * f_new / f_old.T * f_old
             # take 4.6
-            beta = np.dot(f_new, f_new) / np.dot(f_old, f_old)
-            print(beta)
+            # beta = np.dot(f_new, f_new) / np.dot(f_old, f_old)
+            # take 4.8
+            a = np.dot(f_new.T, (f_new - f_old))
+            b = np.dot(h_old.T, (f_new - f_old))
+            #print(f"f_new = {f_new}")
+            #print(f"f_old = {f_old}")
+            #print(f"Value for a: {a}")
+            #print(f"Value for b: {b}")
+            beta = a/b
+
             # confused about pseudo-code. Is it max(0, beta), or np.maximum([0, beta] * h_old)
             h_new = -f_new + np.maximum(0, beta) * h_old
 
@@ -65,7 +74,6 @@ def rosenbrock_derivatives(u, g):
 def model_one(u, g):
     # generally g = 0, 0
     # a = 1,1
-    g = np.array([0, 0])
     a = np.array([1, 1])
     m = a[0] * (math.sqrt((1+u[0])**2 + (1+u[1])**2) - math.sqrt(2) )**2 + \
         a[1] * (math.sqrt((1-u[0])**2 + (1+u[1])**2) - math.sqrt(2) )**2 - \
@@ -85,16 +93,27 @@ def model_one_derivatives(u, g):
     return np.array([f1, f2])
 
 
-a = np.array([1, 1])
-g = np.array([1, 1])
-# Fixed stepsize
-alpha = 0.004
-# Initial guess
-u_initial = np.array([-0.7, 0.75])
-# Dunno, set as I liked for c and r: 0 < c < 1, 0 < r < 1
-c = 0.4
-r = 0.5
-n_reset = 25
+if __name__ == "__main__":
+    a = np.array([1, 1])
+    g = np.array([1, 1])
+    # Fixed stepsize
+    alpha = 0.04
+    # Initial guess
+    # u_initial = np.array([-0.7, 0.75])
+    u_initial = np.array([0, 0])
+    # Dunno, set as I liked for c and r: 0 < c < 1, 0 < r < 1
+    c = 0.5
+    r = 0.5
+    n_reset = 25
 
-print(conjugate_gradient(a, g, alpha, u_initial, model_one, model_one_derivatives, c, r, n_reset))
-#print(conjugate_gradient(a, g, alpha, u_initial, rosenbrock_function, rosenbrock_derivatives, c, r, n_reset))
+    print(conjugate_gradient(a, g, alpha, u_initial, model_one, model_one_derivatives, c, r, n_reset))
+    # print(conjugate_gradient(a, g, alpha, u_initial, rosenbrock_function, rosenbrock_derivatives, c, r, n_reset))
+    u80 = np.zeros(80)
+    g80 = np.zeros(80)
+    # -1 because my matrix goes from 0 to 79, and not from 1 to 80
+    g80[62 - 1] = 1
+    g80[79 - 1] = 1
+    print(conjugate_gradient(a, g80, alpha, u80, model_4a.model_4a, model_4a.model_4a_derivative, c, r, n_reset))
+    #print(model_4a.model_4a(u80, g80))
+
+
