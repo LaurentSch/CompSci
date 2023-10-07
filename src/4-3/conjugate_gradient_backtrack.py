@@ -2,6 +2,7 @@ import numpy as np
 from math import sqrt
 import math
 from src.models import model_4a
+from src.models import model_one
 
 
 def conjugate_gradient(a, g, alpha_init, u_initial, model, derivatives, c, r, n_reset):
@@ -71,28 +72,6 @@ def rosenbrock_derivatives(u, g):
     return np.array([f1, f2])
 
 
-def model_one(u, g):
-    # generally g = 0, 0
-    # a = 1,1
-    a = np.array([1, 1])
-    m = a[0] * (math.sqrt((1+u[0])**2 + (1+u[1])**2) - math.sqrt(2) )**2 + \
-        a[1] * (math.sqrt((1-u[0])**2 + (1+u[1])**2) - math.sqrt(2) )**2 - \
-        g[0]*u[0] - g[1]*u[1]
-    return m
-
-
-def model_one_derivatives(u, g):
-    u1 = u[0]
-    u2 = u[1]
-    g1 = g[0]
-    g2 = g[1]
-    a1 = 1
-    a2 = 1
-    f1 = (2*a1*(u1+1)*(sqrt((u2+1)**2+(u1+1)**2)-sqrt(2)))/sqrt((u2+1)**2+(u1+1)**2) - (2*a2*(1-u1)*(sqrt((u2+1)**2+(1-u1)**2)-sqrt(2)))/sqrt((u2+1)**2+(1-u1)**2)-g1
-    f2 = (2*a1*(u2+1)*(sqrt((u2+1)**2+(u1+1)**2)-sqrt(2)))/sqrt((u2+1)**2+(u1+1)**2) + (2*a2*(u2+1)*(sqrt((u2+1)**2+(1-u1)**2)-sqrt(2)))/sqrt((u2+1)**2+(1-u1)**2)-g2
-    return np.array([f1, f2])
-
-
 if __name__ == "__main__":
     a = np.array([1, 1])
     g = np.array([1, 1])
@@ -106,14 +85,14 @@ if __name__ == "__main__":
     r = 0.5
     n_reset = 25
 
-    print(conjugate_gradient(a, g, alpha, u_initial, model_one, model_one_derivatives, c, r, n_reset))
+    print(conjugate_gradient(a, g, alpha, u_initial, model_one.model, model_one.derivatives, c, r, n_reset))
     # print(conjugate_gradient(a, g, alpha, u_initial, rosenbrock_function, rosenbrock_derivatives, c, r, n_reset))
     u80 = np.zeros(80)
     g80 = np.zeros(80)
     # -1 because my matrix goes from 0 to 79, and not from 1 to 80
     g80[62 - 1] = 1
     g80[79 - 1] = 1
-    print(conjugate_gradient(a, g80, alpha, u80, model_4a.model_4a, model_4a.model_4a_derivative, c, r, n_reset))
-    #print(model_4a.model_4a(u80, g80))
+    print(conjugate_gradient(a, g80, alpha, u80, model_4a.model, model_4a.derivatives, c, r, n_reset))
+
 
 
