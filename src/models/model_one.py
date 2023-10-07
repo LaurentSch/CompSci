@@ -1,19 +1,73 @@
-import math
+from math import sqrt
+import numpy as np
 
 
-def model(u, a, g):
-    term1 = a[0] * (math.sqrt((1 + u[0])**2 + (1 + u[1])**2) - math.sqrt(2))**2
-    term2 = a[1] * (math.sqrt((1 - u[0])**2 + (1 + u[1])**2) - math.sqrt(2))**2
-    term3 = g[0] * u[0]
-    term4 = g[1] * u[1]
-
-    m = term1 + term2 - term3 - term4
+def model(u, g):
+    u1 = u[0]
+    u2 = u[1]
+    g1 = g[0]
+    g2 = g[1]
+    m = (sqrt((1+u1)**2 + (1+u2)**2) - sqrt(2))**2 +\
+        (sqrt((1-u1)**2 + (1+u2)**2) - sqrt(2))**2 - \
+        g1*u1 - g2*u2
     return m
 
-# Example usage:
-u = [0, 0]  # Replace with your desired values of u
-a = [1, 1]  # Replace with your values of a
-g = [0, 0]  # Replace with your values of g
 
-result = model(u, a, g)
-print("Result of the model:", result)
+def derivatives(u, g):
+    u1 = u[0]
+    u2 = u[1]
+    g1 = g[0]
+    g2 = g[1]
+    f1 = (2*(u1+1)*(sqrt((u2+1)**2+(u1+1)**2)-sqrt(2)))/sqrt((u2+1)**2+(u1+1)**2) \
+         - (2*(1-u1)*(sqrt((u2+1)**2+(1-u1)**2)-sqrt(2)))/sqrt((u2+1)**2+(1-u1)**2)-g1
+    f2 = (2*(u2+1)*(sqrt((u2+1)**2+(u1+1)**2)-sqrt(2)))/sqrt((u2+1)**2+(u1+1)**2) \
+         + (2*(u2+1)*(sqrt((u2+1)**2+(1-u1)**2)-sqrt(2)))/sqrt((u2+1)**2+(1-u1)**2)-g2
+    return np.array([f1, f2])
+
+
+def sec_derivatives(u, g):
+    u1 = u[0]
+    u2 = u[1]
+    g1 = g[0]
+    g2 = g[1]
+    # Sec-Derivative u1, u1:
+    f1 = (2*(sqrt((u2+1)**2+(u1+1)**2)-sqrt(2)))/sqrt((u2+1)**2+(u1+1)**2) \
+        -(2*(u1+1)**2*(sqrt((u2+1)**2+(u1+1)**2)-sqrt(2)))/((u2+1)**2+(u1+1)**2)**(3/2) \
+        +(2*(u1+1)**2)/((u2+1)**2+(u1+1)**2) \
+        +(2*(sqrt((u2+1)**2+(1-u1)**2)-sqrt(2)))/sqrt((u2+1)**2+(1-u1)**2) \
+        -(2*(1-u1)**2*(sqrt((u2+1)**2+(1-u1)**2)-sqrt(2)))/((u2+1)**2+(1-u1)**2)**(3/2) \
+        +(2*(1-u1)**2)/((u2+1)**2+(1-u1)**2)
+    # Sec-Derivative u1, u2:
+    f2 = -((2*(u1+1)*(u2+1)*(sqrt((u2+1)**2+(u1+1)**2)-sqrt(2)))/((u2+1)**2+(u1+1)**2)**(3/2)) \
+        +(2*(u1+1)*(u2+1))/((u2+1)**2+(u1+1)**2) \
+        +(2*(1-u1)*(u2+1)*(sqrt((u2+1)**2+(1-u1)**2)-sqrt(2)))/((u2+1)**2+(1-u1)**2)**(3/2) \
+        -(2*(1-u1)*(u2+1))/((u2+1)**2+(1-u1)**2)
+    # Sec-Derivative u2, u1:
+    f3 = -((2*(u1+1)*(u2+1)*(sqrt((u2+1)**2+(u1+1)**2)-sqrt(2)))/((u2+1)**2+(u1+1)**2)**(3/2)) \
+        +(2*(u1+1)*(u2+1))/((u2+1)**2+(u1+1)**2) \
+        +(2*(1-u1)*(u2+1)*(sqrt((u2+1)**2+(1-u1)**2)-sqrt(2)))/((u2+1)**2+(1-u1)**2)**(3/2) \
+        -(2*(1-u1)*(u2+1))/((u2+1)**2+(1-u1)**2)
+    # Sec-Derivative u2, u2:
+    f4 = (2*(sqrt((u2+1)**2+(u1+1)**2)-sqrt(2)))/sqrt((u2+1)**2+(u1+1)**2) \
+        -(2*(u2+1)**2*(sqrt((u2+1)**2+(u1+1)**2)-sqrt(2)))/((u2+1)**2+(u1+1)**2)**(3/2) \
+        +(2*(u2+1)**2)/((u2+1)**2+(u1+1)**2) \
+        +(2*(sqrt((u2+1)**2+(1-u1)**2)-sqrt(2)))/sqrt((u2+1)**2+(1-u1)**2) \
+        -(2*(u2+1)**2*(sqrt((u2+1)**2+(1-u1)**2)-sqrt(2)))/((u2+1)**2+(1-u1)**2)**(3/2) \
+        +(2*(u2+1)**2)/((u2+1)**2+(1-u1)**2)
+    return np.array([[f1, f2], [f3, f4]])
+
+
+
+
+
+
+
+
+
+if __name__ == "__main__":
+    # Example usage:
+    u = [0, 0]  # Replace with your desired values of u
+    g = [0, 0]  # Replace with your values of g
+
+    result = model(u, g)
+    print("Result of the model:", result)
