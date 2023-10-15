@@ -288,10 +288,10 @@ def sec_derivatives(u, g):
         # part 4 loop
         # fix so that it goes from 1 to 10 instead of 0 to 9
         j = i + 1
-        u1i = (2 * j + 20) - 1
+        u1i = (2 * j - 1) - 1
         u2i = (2 * j) - 1
         u3i = (2 * j + 19) - 1
-        u4i = (2 * j - 1) - 1
+        u4i = (2 * j + 20) - 1
         u1 = u[u1i]
         u2 = u[u2i]
         u3 = u[u3i]
@@ -347,10 +347,10 @@ def sec_derivatives(u, g):
         # part 5 loop
         # fix so that it goes from 1 to 10 instead of 0 to 9
         j = i + 1
-        u1i = (2 * j + 1 + 2 * floor((j - 1) / 9)) - 1
-        u2i = (2 * j - 1 + 2 * floor((j - 1) / 9)) - 1
-        u3i = (2 * j + 2 + 2 * floor((j - 1) / 9)) - 1
-        u4i = (2 * j + 2 * floor((j - 1) / 9)) - 1
+        u1i = (2 * j - 1 + 2 * floor((j - 1) / 9)) - 1
+        u2i = (2 * j + 2 * floor((j - 1) / 9)) - 1
+        u3i = (2 * j + 1 + 2 * floor((j - 1) / 9)) - 1
+        u4i = (2 * j + 2 + 2 * floor((j - 1) / 9)) - 1
         u1 = u[u1i]
         u2 = u[u2i]
         u3 = u[u3i]
@@ -406,10 +406,10 @@ def sec_derivatives(u, g):
         # part 6 loop
         # fix so that it goes from 1 to 10 instead of 0 to 9
         j = i + 1
-        u1i = (2 * j + 21 + 2 * floor((j - 1) / 9)) - 1
-        u2i = (2 * j - 1 + 2 * floor((j - 1) / 9)) - 1
-        u3i = (2 * j + 22 + 2 * floor((j - 1) / 9)) - 1
-        u4i = (2 * j + 2 * floor((j - 1) / 9)) - 1
+        u1i = (2 * j - 1 + 2 * floor((j - 1) / 9)) - 1
+        u2i = (2 * j + 2 * floor((j - 1) / 9)) - 1
+        u3i = (2 * j + 21 + 2 * floor((j - 1) / 9)) - 1
+        u4i = (2 * j + 22 + 2 * floor((j - 1) / 9)) - 1
         u1 = u[u1i]
         u2 = u[u2i]
         u3 = u[u3i]
@@ -465,10 +465,10 @@ def sec_derivatives(u, g):
         # part 7 loop
         # fix so that it goes from 1 to 10 instead of 0 to 9
         j = i + 1
-        u1i = (2 * j + 19 + 2 * floor((j - 1) / 9)) - 1
-        u2i = (2 * j + 1 + 2 * floor((j - 1) / 9)) - 1
-        u3i = (2 * j + 20 + 2 * floor((j - 1) / 9)) - 1
-        u4i = (2 * j + 2 + 2 * floor((j - 1) / 9)) - 1
+        u1i = (2 * j + 1 + 2 * floor((j - 1) / 9)) - 1
+        u2i = (2 * j + 2 + 2 * floor((j - 1) / 9)) - 1
+        u3i = (2 * j + 19 + 2 * floor((j - 1) / 9)) - 1
+        u4i = (2 * j + 20 + 2 * floor((j - 1) / 9)) - 1
         u1 = u[u1i]
         u2 = u[u2i]
         u3 = u[u3i]
@@ -528,11 +528,9 @@ def update_matrix_value(matrix, row, col, current_value):
 
 
 if __name__ == "__main__":
-    u80 = np.ones(80)
+    u80 = np.zeros(80)
     g80 = np.ones(80)
     sec_matrix = sec_derivatives(u80, g80)
-
-    u80 = np.ones(80)
 
     # matrix = model(u80, g80)
     # Create a heatmap
