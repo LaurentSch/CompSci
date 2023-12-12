@@ -284,6 +284,7 @@ def sec_derivatives(u, g):
         update_matrix_value(matrix, u2i, u2i, f4)
         # matrix[u2i][u2i] += f4
 
+
     for i in range(30):
         # part 4 loop
         # fix so that it goes from 1 to 10 instead of 0 to 9
@@ -461,7 +462,6 @@ def sec_derivatives(u, g):
         f16 = (2*(-u4+u3+1)**2)/((-u4+u3+1)**2+(-u2+u1+1)**2)-(2*(sqrt((-u4+u3+1)**2+(-u2+u1+1)**2)-sqrt(2))*(-u4+u3+1)**2)/((-u4+u3+1)**2+(-u2+u1+1)**2)**(3/2)+(2*(sqrt((-u4+u3+1)**2+(-u2+u1+1)**2)-sqrt(2)))/sqrt((-u4+u3+1)**2+(-u2+u1+1)**2)
         update_matrix_value(matrix, u4i, u4i, f16)
 
-
     for i in range(27):
         # part 7 loop
         # fix so that it goes from 1 to 10 instead of 0 to 9
@@ -520,6 +520,7 @@ def sec_derivatives(u, g):
         # p7: Sec-Derivative u4, u4:
         f16 = (2*(-u4+u3+1)**2)/((-u4+u3+1)**2+(u2-u1+1)**2)-(2*(sqrt((-u4+u3+1)**2+(u2-u1+1)**2)-sqrt(2))*(-u4+u3+1)**2)/((-u4+u3+1)**2+(u2-u1+1)**2)**(3/2)+(2*(sqrt((-u4+u3+1)**2+(u2-u1+1)**2)-sqrt(2)))/sqrt((-u4+u3+1)**2+(u2-u1+1)**2)
         update_matrix_value(matrix, u4i, u4i, f16)
+
     return matrix
 
 

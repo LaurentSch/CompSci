@@ -4,10 +4,10 @@ import sympy as sp
 
 # Define the variables and the function
 u0, u1 = sp.symbols('u0 u1')
-g = [0, 0]
+g = [1, 1]
 a = [1, 1]
-f = a[0] * (sp.sqrt((1 + u0)**2 + (1 + u1)**2) - sp.sqrt(2))**2 + \
-    a[1] * (sp.sqrt((1 - u0)**2 + (1 + u1)**2) - sp.sqrt(2))**2 - \
+f = (sp.sqrt((1 + u0)**2 + (1 + u1)**2) - sp.sqrt(2))**2 + \
+    (sp.sqrt((1 - u0)**2 + (1 + u1)**2) - sp.sqrt(2))**2 - \
     g[0] * u0 - g[1] * u1
 
 
@@ -21,5 +21,5 @@ df_dy = sp.diff(f, u1)
 print("Partial derivative of f with respect to x:")
 print(df_dx)
 
-print("\nPartial derivative of f with respect to y:")
+print("Partial derivative of f with respect to y:")
 print(df_dy)
