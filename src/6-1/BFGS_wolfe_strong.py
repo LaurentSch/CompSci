@@ -1,9 +1,9 @@
 import numpy as np
-from src.models import model_4a, model_one
+from src.models import model_4a
 from src.Newtons_method import newtons_method
 
 
-def BFGS_standard(a, g, alpha_init, u_initial, tol, model, derivative, c_1, c_2, r):
+def BFGS_strong(a, g, alpha_init, u_initial, tol, model, derivative, c_1, c_2, r):
     # Initialization
     n_var = len(u_initial)  # Set parameters of the objective function
     u = u_initial
@@ -48,15 +48,15 @@ def BFGS_standard(a, g, alpha_init, u_initial, tol, model, derivative, c_1, c_2,
         m_3 = model(u_x, g)
         f_3 = derivative(u_x, g)
 
-        if (m_3 <= (m_new + c_1 * alpha_3 * np.dot(h.T, f_new))) and (np.dot(h.T, f_3) >= (c_2 * np.dot(h.T, f_new))):
+        if (m_3 <= (m_new + c_1 * alpha_3 * np.dot(h.T, f_new))) and np.abs(np.dot(h.T, f_3)) <= c_2 * np.abs(np.dot(h.T, f_new)):
             signal_1 = 1
 
-        while (m_3 < (m_new + c_1 * alpha_3 * np.dot(h.T, f_new))) and (signal_1 == 0):
+        while (m_3 < (m_new + c_1 * alpha_3 * np.dot(h.T, f_new))) and np.dot(h.T, f_3) < - c_2 * np.dot(h.T, f_new) and (signal_1 == 0):
             alpha_3 = alpha_3 / r
             u_x = u + alpha_3 * h
             m_3 = model(u_x, g)
             f_3 = derivative(u_x, g)
-            if (m_3 <= (m_new + c_1 * alpha_3 * np.dot(h.T, f_new))) and (np.dot(h.T, f_3) >= (c_2 * np.dot(h.T, f_new))):
+            if (m_3 <= (m_new + c_1 * alpha_3 * np.dot(h.T, f_new))) and np.abs(np.dot(h.T, f_3)) <= (c_2 * np.abs(np.dot(h.T, f_new))):
                 signal_1 = 1
 
         # Apply bisection method if no acceptable stepsize is found yet
@@ -83,16 +83,24 @@ def BFGS_standard(a, g, alpha_init, u_initial, tol, model, derivative, c_1, c_2,
                     u_x = u + alpha_2 * h
                     m_2 = model(u_x, g)
                     f_2 = derivative(u_x, g)
-                elif np.dot(h.T,  f_2) < (c_2 * np.dot(h.T, f_new)):
-                    alpha_1 = alpha_2
-                    m_1 = m_2
-                    f_1 = f_2
-                    alpha_2 = (alpha_2 + alpha_3) / 2
-                    u_x = u + alpha_2 * h
-                    m_2 = model(u_x, g)
-                    f_2 = derivative(u_x, g)
                 else:
-                    signal_2 = 1
+                    if np.dot(h.T, f_2) < c_2 * np.dot(h.T, f_new):
+                        alpha_1 = alpha_2
+                        m_1 = m_2
+                        f_1 = f_2
+                        alpha_2 = (alpha_2 + alpha_3) / 2
+                        u_x = u + alpha_2 * h
+                        m_2 = model(u_x, g)
+                        f_2 = derivative(u_x, g)
+                    elif np.dot(h.T, f_2) > - c_2 * np.dot(h.T, f_new):
+                        alpha_3 = alpha_2
+                        m_3 = m_2
+                        f_3 = f_2
+                        alpha_2 = (alpha_1 + alpha_2) / 2
+                        m_2 = model(u_x, g)
+                        f_2 = derivative(u_x, g)
+                    else:
+                        signal_2 = 1
 
         # Complete iteration
         delta_u = u_x - u
@@ -123,14 +131,8 @@ if __name__ == "__main__":
     g80[62 - 1] = 1
     g80[79 - 1] = 1
     tolerance = 10**(-12)
-    print(BFGS_standard(a, g80, alpha, u80, tolerance, model_4a.model, model_4a.derivatives, c1, c2, r))
+    print(BFGS_strong(a, g80, alpha, u80, tolerance, model_4a.model, model_4a.derivatives, c1, c2, r))
+
     # Newtons to compare
     print(newtons_method.newton(a, g80, u80, tolerance, model_4a.model, model_4a.derivatives, model_4a.sec_derivatives))
 
-    # a = np.array([1, 1])
-    # g = np.array([1, 1])
-    # # Initial guess
-    # u_initial = np.array([0, 0])
-    # print(BFGS_standard(a, g, alpha, u_initial, tolerance, model_one.model, model_one.derivatives, c1, c2, r))
-    # # Newtons to compare
-    # print(newtons_method.newton(a, g, u_initial, tolerance, model_one.model, model_one.derivatives, model_one.sec_derivatives))

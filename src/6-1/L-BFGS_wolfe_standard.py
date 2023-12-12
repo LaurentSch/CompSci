@@ -3,43 +3,55 @@ from src.models import model_4a, model_one
 from src.Newtons_method import newtons_method
 
 
-def BFGS_standard(a, g, alpha_init, u_initial, tol, model, derivative, c_1, c_2, r):
+def LBFGS_standard(a, g, alpha_init, u_initial, tol, model, derivative, c_1, c_2, r):
     # Initialization
     n_var = len(u_initial)  # Set parameters of the objective function
     u = u_initial
-    L_new = np.eye(n_var)
+    L_0 = np.eye(n_var)
+    n_li = 5 # standard values are between 5 and 20
+    delta_F = np.zeros((n_var, n_li))
+    delta_U = np.zeros((n_var, n_li))
+    rho = np.zeros(n_li)
 
-    # Quasi-Newton Algorithm
+    # Quasi-newton algorithm
     m_new = model(u, g)
     f_2 = derivative(u, g)
     # initialize m_old and f_new with dummy values
     m_old = 10**100
-    f_new = np.zeros(n_var)
     # counter
     cnt = 0
-    # dummy delta_u
-    delta_u = np.array([0, 0])
     while m_new < m_old:
         m_old = m_new
-        f_old = f_new
-        L_old = L_new
         f_new = f_2
-        delta_f = f_new - f_old
-
-        # Determine search direction
-        if cnt == 0:
-            h = -np.dot(L_old, f_new)
+        cnt += 1
+        # determine search direction
+        if cnt == 1:
+            h = - np.dot(L_0, f_new)
         else:
-            part_1 = np.dot(delta_u.T, delta_f) + np.dot(delta_f.T, np.dot(L_old, delta_f))
-            part_2 = np.outer(delta_u, delta_u.T)
-            denominator_1 = np.dot(delta_u.T, delta_f)**2
-            equ_1 = (part_1 * part_2) / denominator_1
-            part_3 = np.dot(np.dot(L_old, delta_f), delta_u.T) + np.dot(np.dot(delta_u, delta_f.T), L_old)
-            denominator_2 = np.dot(delta_u.T, delta_f)
-            equ_2 = part_3 / denominator_2
-            L_new = L_old + equ_1 - equ_2
-            h = -np.dot(L_new, f_new)
+            gamma = np.zeros(n_li)
+            h = f_new
+            upper_bound = max(1, n_li - cnt + 2)
+            # not 100% sure if it's (- 1) or not
+            for j in range(n_li, upper_bound - 1, -1):
+                # not sure if j-1 is correct
+                p = rho[j-1]
+                delta_u = delta_U[:, j-1]
+                delta_f = delta_F[:, j-1]
+                y = p * np.dot(delta_u.T, h)
+                h = h - y * delta_f
+                gamma[j-1] = y
+            h = np.dot(L_0, h)
+            for j in range(max(0, n_li - cnt + 2), n_li):
+                p = rho[j-1]
+                delta_u = delta_U[:, j-1]
+                delta_f = delta_F[:, j-1]
+                y = gamma[j-1]
+                # wanted to call it n, but maybe confusing with n_li existing
+                eta = p * np.dot(delta_f.T, h)
+                h = h + (y - eta) * delta_u
+            h = -h
 
+        # --------------------------------
         # Line search
         # determine initial search domain, but stop if acceptable stepsize is found
         signal_1 = 0
@@ -94,16 +106,24 @@ def BFGS_standard(a, g, alpha_init, u_initial, tol, model, derivative, c_1, c_2,
                 else:
                     signal_2 = 1
 
+        # --------------------------------
         # Complete iteration
         delta_u = u_x - u
         u = u_x
-        cnt += 1
-
         if signal_1 == 1:
             m_new = m_3
             f_2 = f_3
         else:
             m_new = m_2
+
+        delta_f = f_2 - f_new
+        delta_U[:, 1: n_li-2] = delta_U[:, 2: n_li-1]
+        delta_U[:, n_li-2] = delta_u
+
+        delta_F[:, 1: n_li-2] = delta_F[:, 2: n_li-1]
+        delta_F[:, n_li-2] = delta_f
+        rho[1: (n_li-2)] = rho[2: n_li-1]
+        rho[n_li-2] = 1 / np.dot(delta_f.T, delta_u)
 
     # Completion
     m_star = m_old
@@ -123,7 +143,7 @@ if __name__ == "__main__":
     g80[62 - 1] = 1
     g80[79 - 1] = 1
     tolerance = 10**(-12)
-    print(BFGS_standard(a, g80, alpha, u80, tolerance, model_4a.model, model_4a.derivatives, c1, c2, r))
+    print(LBFGS_standard(a, g80, alpha, u80, tolerance, model_4a.model, model_4a.derivatives, c1, c2, r))
     # Newtons to compare
     print(newtons_method.newton(a, g80, u80, tolerance, model_4a.model, model_4a.derivatives, model_4a.sec_derivatives))
 
@@ -131,6 +151,7 @@ if __name__ == "__main__":
     # g = np.array([1, 1])
     # # Initial guess
     # u_initial = np.array([0, 0])
-    # print(BFGS_standard(a, g, alpha, u_initial, tolerance, model_one.model, model_one.derivatives, c1, c2, r))
+    # print(LBFGS_standard(a, g, alpha, u_initial, tolerance, model_one.model, model_one.derivatives, c1, c2, r))
     # # Newtons to compare
     # print(newtons_method.newton(a, g, u_initial, tolerance, model_one.model, model_one.derivatives, model_one.sec_derivatives))
+
