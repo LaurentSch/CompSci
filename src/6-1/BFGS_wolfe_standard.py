@@ -1,4 +1,6 @@
 import numpy as np
+import pylab as p
+
 from src.models import model_4a, model_one
 from src.Newtons_method import newtons_method
 
@@ -30,15 +32,12 @@ def BFGS_standard(a, g, alpha_init, u_initial, tol, model, derivative, c_1, c_2,
         if cnt == 0:
             h = -np.dot(L_old, f_new)
         else:
-            part_1 = np.dot(delta_u.T, delta_f) + np.dot(delta_f.T, np.dot(L_old, delta_f))
-            part_2 = np.outer(delta_u, delta_u.T)
-            denominator_1 = np.dot(delta_u.T, delta_f)**2
-            equ_1 = (part_1 * part_2) / denominator_1
-            part_3 = np.dot(np.dot(L_old, delta_f), delta_u.T) + np.dot(np.dot(delta_u, delta_f.T), L_old)
-            denominator_2 = np.dot(delta_u.T, delta_f)
-            equ_2 = part_3 / denominator_2
-            L_new = L_old + equ_1 - equ_2
+            delta_f = delta_f.reshape((len(delta_u), 1))
+            part_1 = (np.dot(delta_u.T, delta_f) + np.dot(np.dot(delta_f.T, L_old), delta_f)) * np.outer(delta_u, delta_u.T) / np.dot(delta_u.T, delta_f)**2
+            part_2 = (np.outer(L_old.dot(delta_f).flatten(), delta_u) + np.outer(delta_u.flatten(), delta_f.T.dot(L_old))) / np.dot(delta_u.T, delta_f)
+            L_new = L_old + part_1 - part_2
             h = -np.dot(L_new, f_new)
+
 
         # Line search
         # determine initial search domain, but stop if acceptable stepsize is found
@@ -125,7 +124,7 @@ if __name__ == "__main__":
     tolerance = 10**(-12)
     print(BFGS_standard(a, g80, alpha, u80, tolerance, model_4a.model, model_4a.derivatives, c1, c2, r))
     # Newtons to compare
-    print(newtons_method.newton(a, g80, u80, tolerance, model_4a.model, model_4a.derivatives, model_4a.sec_derivatives))
+    # print(newtons_method.newton(a, g80, u80, tolerance, model_4a.model, model_4a.derivatives, model_4a.sec_derivatives))
 
     # a = np.array([1, 1])
     # g = np.array([1, 1])
